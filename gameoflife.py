@@ -1,5 +1,5 @@
 import numpy as np
-import time
+import sys
 
 import utils
 
@@ -23,7 +23,7 @@ def next_board_state(state):
     state = np.copy(state)
     new_state = np.zeros(state.shape, dtype=int)
     for y in range(len(state)):
-        for x in range(len(state)):
+        for x in range(len(state[y])):
             neighbors = get_neighbors(state,x,y)
             living_neighbors = len([i for i in neighbors if i == 1])
             if state[y,x] == 1:
@@ -40,15 +40,19 @@ def next_board_state(state):
 
 def render(state):
     height, width = state.shape
-    print '-'*(width + 2)
+    outputstrs = []
+    outputstrs.append('-'*(width + 2))
     for h in range(height):
-        print '|' + utils.row_to_str(state[h]) + '|'
-    print '-'*(width + 2)
-    
-    
-board_state = random_state(50,50)
+        outputstrs.append('|' + utils.row_to_str(state[h]) + '|')
+    outputstrs.append('-'*(width + 2))
+    outputstr = '\n'.join(outputstrs)
+    print outputstr
+
+
+board_dims = [int(i) for i in sys.argv[1:3]]
+board_state = random_state(board_dims[0],board_dims[1])
 
 while True:
     render(board_state)
     board_state = next_board_state(board_state)
-    time.sleep(0.25)
+    
