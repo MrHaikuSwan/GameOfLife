@@ -1,0 +1,11 @@
+Milestones:
+- Build structure to store board
+- Pretty print board to terminal
+- Calculate next state given inital state
+- Run the game forEVAR
+
+Extensions:
+- Save cool extensions to files to load later
+- Improve UI
+- Change the ruullesss :D
+
