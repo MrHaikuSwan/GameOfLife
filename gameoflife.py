@@ -7,6 +7,8 @@ import time
 import utils
 
 def random_state(height, width, chance_of_living = 0.5):
+    if height is None or width is None:
+        height, width = 60, 60
     randfloat = np.random.rand(height, width)
     board_state = np.zeros((height,width), dtype=int)
     for y in range(len(randfloat)):
@@ -15,12 +17,18 @@ def random_state(height, width, chance_of_living = 0.5):
                 board_state[y,x] = 1
     return board_state
 
-def load_board_state(fname):
+def load_board_state(fname, height, width):
     with open(fname, 'r') as f:
         array_like = [i.strip() for i in f.readlines()]
         array_like = [list(i) for i in array_like]
-        board_state = np.array(array_like, dtype = int)
-        return board_state
+        loadfile_state = np.array(array_like, dtype = int)
+    loadheight = loadfile_state.shape[0]
+    loadwidth = loadfile_state.shape[1]
+    if height is None and width is None:
+        height, width = loadheight, loadwidth
+    board_state = np.zeros((height, width), dtype = int)
+    board_state[0:loadheight, 0:loadwidth] = loadfile_state
+    return board_state
 
 def get_neighbors(state,x,y):
     state = np.copy(state)
@@ -65,19 +73,35 @@ def render(state):
 
 
 args = sys.argv[1:]
-if args:
-    if os.path.isfile(args[0]) and args[0].endswith('.txt'):
-        board_state = load_board_state(args[0])
-    else:
-        board_dims = [int(i) for i in args[:3]]
-        if len(board_dims) == 3:    
-            board_state = random_state(board_dims[0],board_dims[1],board_dims[2])
-        elif len(board_dims) == 2:
-            board_state = random_state(board_dims[0],board_dims[1])
-        elif len(board_dims) == 1:
-            board_state = random_state(board_dims[0],board_dims[0])
-else:
+if not args:
     board_state = random_state(60,60)
+else:
+    if os.path.isfile(args[0]) and args[0].endswith('.txt'):
+        fp = args[0]
+        args = args[1:]
+    else:
+        fp = ''
+    board_dims = [int(i) for i in args[:3]]
+    if len(board_dims) == 3:
+        height = board_dims[0]
+        width = board_dims[1]
+        chance_of_living = board_dims[2]
+    elif len(board_dims) == 2:
+        height = board_dims[0]
+        width = board_dims[1]
+        chance_of_living = 0.5
+    elif len(board_dims) == 1:
+        height = board_dims[0]
+        width = board_dims[0]
+        chance_of_living = 0.5
+    else:
+        height = None
+        width = None
+        chance_of_living = 0.5
+    if fp:
+        board_state = load_board_state(fp, height, width)
+    else:
+        board_state = random_state(height, width, chance_of_living)
 
 while True:
     beg_loop = time.time()
