@@ -1,11 +1,26 @@
 import numpy as np
+#import curses #however this works
 import sys
+import os
+import time
 
 import utils
 
-def random_state(height, width):
-    board_state = np.random.randint(2, size = (height, width))
+def random_state(height, width, chance_of_living = 0.5):
+    randfloat = np.random.rand(height, width)
+    board_state = np.zeros((height,width), dtype=int)
+    for y in range(len(randfloat)):
+        for x in range(len(randfloat[y])):
+            if randfloat[y,x] > (1 - chance_of_living):
+                board_state[y,x] = 1
     return board_state
+
+def load_board_state(fname):
+    with open(fname, 'r') as f:
+        array_like = [i.strip() for i in f.readlines()]
+        array_like = [list(i) for i in array_like]
+        board_state = np.array(array_like, dtype = int)
+        return board_state
 
 def get_neighbors(state,x,y):
     state = np.copy(state)
@@ -49,10 +64,24 @@ def render(state):
     print outputstr
 
 
-board_dims = [int(i) for i in sys.argv[1:3]]
-board_state = random_state(board_dims[0],board_dims[1])
+args = sys.argv[1:]
+if args:
+    if os.path.isfile(args[0]) and args[0].endswith('.txt'):
+        board_state = load_board_state(args[0])
+    else:
+        board_dims = [int(i) for i in args[:3]]
+        if len(board_dims) == 3:    
+            board_state = random_state(board_dims[0],board_dims[1],board_dims[2])
+        elif len(board_dims) == 2:
+            board_state = random_state(board_dims[0],board_dims[1])
+        elif len(board_dims) == 1:
+            board_state = random_state(board_dims[0],board_dims[0])
+else:
+    board_state = random_state(60,60)
 
 while True:
+    beg_loop = time.time()
     render(board_state)
     board_state = next_board_state(board_state)
+    time.sleep(utils.positive(0.02 - time.time() + beg_loop))
     
