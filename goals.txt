@@ -1,11 +1,14 @@
 Milestones:
-- Build structure to store board
-- Pretty print board to terminal
-- Calculate next state given inital state
-- Run the game forEVAR
+- Build structure to store board (check)
+- Pretty print board to terminal (check)
+- Calculate next state given inital state (check)
+- Run the game forEVAR (check)
 
 Extensions:
-- Save cool extensions to files to load later
+- Save cool extensions to files to load later (check)
 - Improve UI
 - Change the ruullesss :D
+- Langton's Ant
+- Brian's Brain
+- Day and Night
 
